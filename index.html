@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, viewport-fit=cover">
   <meta name="theme-color" content="#C8102E">
   <title>Aniversário</title>
-  <link rel="preload" as="image" href="fundo.png">
-  <link rel="preload" as="image" href="letreiro.png">
+  <link rel="preload" as="image" href="fundo.png?v=3">
+  <link rel="preload" as="image" href="letreiro.png?v=3">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -44,7 +44,7 @@
 
     /* ---------- Tela 2 (fica por baixo) ---------- */
     #tela-final {
-      background: #000 url("fundo.png") center / cover no-repeat;
+      background: #000 url("fundo.png?v=3") center / cover no-repeat;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -72,26 +72,26 @@
     /* Piscadas irregulares como neon ligando (4 piscadas) e depois aceso */
     @keyframes neon-liga {
       0%   { opacity: 0;   filter: none; }
-      6%   { opacity: 1;   filter: drop-shadow(0 0 6px rgba(255,255,255,.6)); }
+      6%   { opacity: 1;   filter: drop-shadow(0 0 6px rgba(255,220,0,.55)); }
       9%   { opacity: 0;   filter: none; }
       22%  { opacity: 0;   filter: none; }
-      24%  { opacity: .9;  filter: drop-shadow(0 0 8px rgba(255,255,255,.6)); }
+      24%  { opacity: .9;  filter: drop-shadow(0 0 8px rgba(255,220,0,.55)); }
       26%  { opacity: .2;  filter: none; }
-      28%  { opacity: 1;   filter: drop-shadow(0 0 8px rgba(255,255,255,.6)); }
+      28%  { opacity: 1;   filter: drop-shadow(0 0 8px rgba(255,220,0,.55)); }
       32%  { opacity: 0;   filter: none; }
       50%  { opacity: 0;   filter: none; }
-      52%  { opacity: 1;   filter: drop-shadow(0 0 10px rgba(255,255,255,.7)); }
-      58%  { opacity: 1;   filter: drop-shadow(0 0 10px rgba(255,255,255,.7)); }
+      52%  { opacity: 1;   filter: drop-shadow(0 0 10px rgba(255,220,0,.6)); }
+      58%  { opacity: 1;   filter: drop-shadow(0 0 10px rgba(255,220,0,.6)); }
       60%  { opacity: 0;   filter: none; }
       70%  { opacity: 0;   filter: none; }
-      72%  { opacity: 1;   filter: drop-shadow(0 0 12px rgba(255,255,255,.75)) drop-shadow(0 0 24px rgba(255,90,120,.5)); }
-      100% { opacity: 1;   filter: drop-shadow(0 0 12px rgba(255,255,255,.75)) drop-shadow(0 0 24px rgba(255,90,120,.5)); }
+      72%  { opacity: 1;   filter: drop-shadow(0 0 8px rgba(255,220,0,.6)) drop-shadow(0 0 20px rgba(255,80,0,.4)); }
+      100% { opacity: 1;   filter: drop-shadow(0 0 8px rgba(255,220,0,.6)) drop-shadow(0 0 20px rgba(255,80,0,.4)); }
     }
 
     /* Brilho leve e contínuo depois de aceso */
     @keyframes neon-pulsa {
-      0%, 100% { opacity: 1; filter: drop-shadow(0 0 12px rgba(255,255,255,.75)) drop-shadow(0 0 24px rgba(255,90,120,.5)); }
-      50%      { opacity: 1; filter: drop-shadow(0 0 16px rgba(255,255,255,.85)) drop-shadow(0 0 32px rgba(255,90,120,.6)); }
+      0%, 100% { opacity: 1; filter: drop-shadow(0 0 8px rgba(255,220,0,.6)) drop-shadow(0 0 20px rgba(255,80,0,.4)); }
+      50%      { opacity: 1; filter: drop-shadow(0 0 11px rgba(255,220,0,.7)) drop-shadow(0 0 26px rgba(255,80,0,.5)); }
     }
 
     /* ---------- Tela 1 (por cima) ---------- */
@@ -151,7 +151,7 @@
     input[type="date"]::-webkit-date-and-time-value { text-align: center; }
 
     input[type="date"]:focus {
-      outline: 3px solid rgba(255,255,255,.6);
+      outline: 3px solid rgba(255,220,0,.55);
       outline-offset: 2px;
     }
 
@@ -181,7 +181,7 @@
 <body>
   <main id="app">
     <section id="tela-final" class="tela" aria-hidden="true">
-      <img id="letreiro" src="letreiro.png" alt="Letreiro">
+      <img id="letreiro" src="letreiro.png?v=3" alt="Letreiro">
     </section>
 
     <section id="tela-inicio" class="tela">
