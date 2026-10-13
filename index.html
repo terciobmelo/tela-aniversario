@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#C8102E">
+  <title>Aniversário</title>
+  <link rel="preload" as="image" href="fundo.png">
+  <link rel="preload" as="image" href="letreiro.png">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      background: #000;
+      overflow: hidden;
+      overscroll-behavior: none;
+      touch-action: manipulation;
+      -webkit-text-size-adjust: 100%;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+    }
+
+    /* "Tela de celular": ocupa tudo no celular, 430px centralizado no computador */
+    #app {
+      position: relative;
+      width: 100%;
+      max-width: 430px;
+      height: 100vh;   /* fallback */
+      height: 100dvh;
+      overflow: hidden;
+    }
+
+    .tela {
+      position: absolute;
+      inset: 0;
+    }
+
+    /* ---------- Tela 2 (fica por baixo) ---------- */
+    #tela-final {
+      background: #000 url("fundo.png") center / cover no-repeat;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #letreiro {
+      display: block;
+      max-width: 80%;
+      max-height: 80%;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      opacity: 0;
+      user-select: none;
+      -webkit-user-drag: none;
+      pointer-events: none;
+    }
+
+    #letreiro.ligando {
+      animation:
+        neon-liga 2.4s linear forwards,
+        neon-pulsa 3s ease-in-out 2.4s infinite;
+    }
+
+    /* Piscadas irregulares como neon ligando (4 piscadas) e depois aceso */
+    @keyframes neon-liga {
+      0%   { opacity: 0;   filter: none; }
+      6%   { opacity: 1;   filter: drop-shadow(0 0 6px rgba(255,255,255,.6)); }
+      9%   { opacity: 0;   filter: none; }
+      22%  { opacity: 0;   filter: none; }
+      24%  { opacity: .9;  filter: drop-shadow(0 0 8px rgba(255,255,255,.6)); }
+      26%  { opacity: .2;  filter: none; }
+      28%  { opacity: 1;   filter: drop-shadow(0 0 8px rgba(255,255,255,.6)); }
+      32%  { opacity: 0;   filter: none; }
+      50%  { opacity: 0;   filter: none; }
+      52%  { opacity: 1;   filter: drop-shadow(0 0 10px rgba(255,255,255,.7)); }
+      58%  { opacity: 1;   filter: drop-shadow(0 0 10px rgba(255,255,255,.7)); }
+      60%  { opacity: 0;   filter: none; }
+      70%  { opacity: 0;   filter: none; }
+      72%  { opacity: 1;   filter: drop-shadow(0 0 12px rgba(255,255,255,.75)) drop-shadow(0 0 24px rgba(255,90,120,.5)); }
+      100% { opacity: 1;   filter: drop-shadow(0 0 12px rgba(255,255,255,.75)) drop-shadow(0 0 24px rgba(255,90,120,.5)); }
+    }
+
+    /* Brilho leve e contínuo depois de aceso */
+    @keyframes neon-pulsa {
+      0%, 100% { opacity: 1; filter: drop-shadow(0 0 12px rgba(255,255,255,.75)) drop-shadow(0 0 24px rgba(255,90,120,.5)); }
+      50%      { opacity: 1; filter: drop-shadow(0 0 16px rgba(255,255,255,.85)) drop-shadow(0 0 32px rgba(255,90,120,.6)); }
+    }
+
+    /* ---------- Tela 1 (por cima) ---------- */
+    #tela-inicio {
+      z-index: 2;
+      background: #C8102E;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 28px;
+      padding: 24px max(24px, env(safe-area-inset-right)) 24px max(24px, env(safe-area-inset-left));
+      opacity: 1;
+      transition: opacity .8s ease;
+    }
+
+    #tela-inicio.saindo {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    #tela-inicio h1 {
+      font-size: clamp(26px, 8vw, 34px);
+      font-weight: 700;
+      line-height: 1.2;
+      text-align: center;
+      max-width: 340px;
+    }
+
+    form {
+      width: 100%;
+      max-width: 340px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    input[type="date"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      min-height: 60px;
+      padding: 0 18px;
+      border: 2px solid rgba(255,255,255,.9);
+      border-radius: 14px;
+      background: #fff;
+      color: #222;
+      font-size: 20px; /* >= 16px evita zoom automático no iOS */
+      font-family: inherit;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    input[type="date"]::-webkit-date-and-time-value { text-align: center; }
+
+    input[type="date"]:focus {
+      outline: 3px solid rgba(255,255,255,.6);
+      outline-offset: 2px;
+    }
+
+    button {
+      width: 100%;
+      min-height: 60px;
+      border: none;
+      border-radius: 14px;
+      background: #fff;
+      color: #C8102E;
+      font-size: 20px;
+      font-weight: 700;
+      font-family: inherit;
+      letter-spacing: .5px;
+      cursor: pointer;
+      transition: transform .1s ease, opacity .2s ease;
+    }
+
+    button:active:not(:disabled) { transform: scale(.97); }
+
+    button:disabled {
+      opacity: .45;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body>
+  <main id="app">
+    <section id="tela-final" class="tela" aria-hidden="true">
+      <img id="letreiro" src="letreiro.png" alt="Letreiro">
+    </section>
+
+    <section id="tela-inicio" class="tela">
+      <h1>Qual a sua data de nascimento?</h1>
+      <form id="form-data" novalidate>
+        <input type="date" id="data" required aria-label="Data de nascimento">
+        <button type="submit" id="entrar" disabled>Entrar</button>
+      </form>
+    </section>
+  </main>
+
+  <script>
+    (function () {
+      var inicio = document.getElementById('tela-inicio');
+      var final = document.getElementById('tela-final');
+      var form = document.getElementById('form-data');
+      var data = document.getElementById('data');
+      var entrar = document.getElementById('entrar');
+      var letreiro = document.getElementById('letreiro');
+      var entrou = false;
+
+      function atualizarBotao() {
+        entrar.disabled = !data.value;
+      }
+      data.addEventListener('input', atualizarBotao);
+      data.addEventListener('change', atualizarBotao);
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        if (!data.value || entrou) return;
+        entrou = true;
+        data.blur();
+
+        inicio.classList.add('saindo');
+        final.setAttribute('aria-hidden', 'false');
+
+        // 0,8s de fade + 1s de espera antes do letreiro acender
+        setTimeout(function () {
+          inicio.style.display = 'none';
+        }, 800);
+        setTimeout(function () {
+          letreiro.classList.add('ligando');
+        }, 800 + 1000);
+      });
+
+      // Bloqueia zoom por pinça / duplo toque (iOS ignora user-scalable=no)
+      document.addEventListener('gesturestart', function (e) { e.preventDefault(); });
+      document.addEventListener('touchmove', function (e) {
+        if (e.touches.length > 1) e.preventDefault();
+      }, { passive: false });
+      var ultimoToque = 0;
+      document.addEventListener('touchend', function (e) {
+        var agora = Date.now();
+        if (agora - ultimoToque < 300 && !e.target.closest('input, button')) e.preventDefault();
+        ultimoToque = agora;
+      }, { passive: false });
+    })();
+  </script>
+</body>
+</html>
