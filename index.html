@@ -157,6 +157,27 @@
       outline-offset: 2px;
     }
 
+    input[type="date"].tremendo {
+      animation: tremer .45s ease;
+    }
+
+    @keyframes tremer {
+      0%, 100% { transform: translateX(0); }
+      15%      { transform: translateX(-8px); }
+      30%      { transform: translateX(7px); }
+      45%      { transform: translateX(-5px); }
+      60%      { transform: translateX(4px); }
+      75%      { transform: translateX(-2px); }
+    }
+
+    .erro {
+      margin-top: -6px;
+      font-size: 16px;
+      font-weight: 600;
+      text-align: center;
+      color: #fff;
+    }
+
     button {
       width: 100%;
       min-height: 60px;
@@ -187,9 +208,10 @@
     </section>
 
     <section id="tela-inicio" class="tela">
-      <h1>Qual a sua data de nascimento?</h1>
+      <h1>Informe sua data de nascimento.</h1>
       <form id="form-data" novalidate>
-        <input type="date" id="data" required aria-label="Data de nascimento">
+        <input type="date" id="data" required aria-label="Data de nascimento" aria-describedby="erro">
+        <p id="erro" class="erro" role="alert" hidden>Data incorreta. Tente novamente.</p>
         <button type="submit" id="entrar" disabled>Entrar</button>
       </form>
     </section>
@@ -203,17 +225,34 @@
       var data = document.getElementById('data');
       var entrar = document.getElementById('entrar');
       var letreiro = document.getElementById('letreiro');
+      var erro = document.getElementById('erro');
+      var DATA_CORRETA = '2004-01-17'; // 17/01/2004 (o campo devolve AAAA-MM-DD)
       var entrou = false;
 
       function atualizarBotao() {
         entrar.disabled = !data.value;
+        erro.hidden = true; // some assim que a pessoa mexe na data de novo
       }
       data.addEventListener('input', atualizarBotao);
       data.addEventListener('change', atualizarBotao);
 
+      function mostrarErro() {
+        erro.hidden = false;
+        data.classList.remove('tremendo');
+        void data.offsetWidth; // reinicia a animação se errar de novo
+        data.classList.add('tremendo');
+      }
+      data.addEventListener('animationend', function () {
+        data.classList.remove('tremendo');
+      });
+
       form.addEventListener('submit', function (e) {
         e.preventDefault();
         if (!data.value || entrou) return;
+        if (data.value !== DATA_CORRETA) {
+          mostrarErro();
+          return;
+        }
         entrou = true;
         data.blur();
 
