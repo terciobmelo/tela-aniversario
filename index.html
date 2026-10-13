@@ -265,7 +265,8 @@
       var entrar = document.getElementById('entrar');
       var letreiro = document.getElementById('letreiro');
       var erro = document.getElementById('erro');
-      var DATA_CORRETA = '2004-01-17'; // 17/01/2004 (o campo devolve AAAA-MM-DD)
+      // Aceita qualquer dia de janeiro de 2004 (o campo devolve AAAA-MM-DD)
+      var MES_ANO_CORRETOS = '2004-01-';
       var entrou = false;
       var musica = document.getElementById('musica');
       var som = document.getElementById('som');
@@ -340,7 +341,7 @@
       form.addEventListener('submit', function (e) {
         e.preventDefault();
         if (!data.value || entrou) return;
-        if (data.value !== DATA_CORRETA) {
+        if (data.value.indexOf(MES_ANO_CORRETOS) !== 0) {
           mostrarErro();
           return;
         }
