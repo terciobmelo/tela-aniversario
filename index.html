@@ -46,8 +46,10 @@
     #tela-final {
       background: #000 url("fundo.png?v=3") center / cover no-repeat;
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: center;
+      padding-top: 8vh;   /* fallback */
+      padding-top: 8dvh;  /* 8% da altura da tela */
     }
 
     #letreiro {
