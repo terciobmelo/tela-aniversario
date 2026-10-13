@@ -96,6 +96,40 @@
       50%      { opacity: 1; filter: drop-shadow(0 0 11px rgba(255,220,0,.7)) drop-shadow(0 0 26px rgba(255,80,0,.5)); }
     }
 
+    /* Botão discreto de pausar/tocar a música */
+    #som {
+      position: absolute;
+      top: max(14px, env(safe-area-inset-top));
+      right: 14px;
+      z-index: 1;
+      width: 40px;
+      height: 40px;
+      min-height: 0;
+      padding: 0;
+      border: 1px solid rgba(255,255,255,.35);
+      border-radius: 50%;
+      background: rgba(0,0,0,.35);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .6s ease, transform .1s ease;
+      -webkit-backdrop-filter: blur(4px);
+      backdrop-filter: blur(4px);
+    }
+
+    #som.visivel {
+      opacity: .75;
+      pointer-events: auto;
+    }
+
+    #som svg { width: 18px; height: 18px; fill: currentColor; }
+    #som .icone-tocar { display: none; }
+    #som.pausado .icone-pausar { display: none; }
+    #som.pausado .icone-tocar { display: block; }
+
     /* ---------- Tela 1 (por cima) ---------- */
     #tela-inicio {
       z-index: 2;
@@ -205,7 +239,12 @@
   <main id="app">
     <section id="tela-final" class="tela" aria-hidden="true">
       <img id="letreiro" src="letreiro.png?v=3" alt="Letreiro">
+      <button type="button" id="som" aria-label="Pausar música">
+        <svg class="icone-pausar" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/></svg>
+        <svg class="icone-tocar" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+      </button>
     </section>
+    <audio id="musica" src="musica.mp3" loop preload="auto"></audio>
 
     <section id="tela-inicio" class="tela">
       <h1>Informe sua data de nascimento.</h1>
@@ -228,6 +267,58 @@
       var erro = document.getElementById('erro');
       var DATA_CORRETA = '2004-01-17'; // 17/01/2004 (o campo devolve AAAA-MM-DD)
       var entrou = false;
+      var musica = document.getElementById('musica');
+      var som = document.getElementById('som');
+      var FADE_MUSICA = 2; // segundos
+
+      // Começa a música com o volume subindo aos poucos.
+      // No iPhone o volume do <audio> não pode ser mudado por código,
+      // então o fade é feito pela Web Audio API (no site publicado).
+      // Abrindo o arquivo direto do computador (file://) usa o volume normal.
+      function tocarMusicaComFade() {
+        var Ctx = window.AudioContext || window.webkitAudioContext;
+        if (Ctx && location.protocol !== 'file:') {
+          try {
+            var ctx = new Ctx();
+            var ganho = ctx.createGain();
+            ctx.createMediaElementSource(musica).connect(ganho);
+            ganho.connect(ctx.destination);
+            ganho.gain.setValueAtTime(0.0001, ctx.currentTime);
+            ganho.gain.exponentialRampToValueAtTime(1, ctx.currentTime + FADE_MUSICA);
+            if (ctx.state === 'suspended') ctx.resume();
+            return tocar();
+          } catch (err) { /* cai no fade pelo volume */ }
+        }
+        musica.volume = 0;
+        var inicio = null;
+        function passo(t) {
+          if (inicio === null) inicio = t;
+          var p = Math.min((t - inicio) / (FADE_MUSICA * 1000), 1);
+          musica.volume = p;
+          if (p < 1) requestAnimationFrame(passo);
+        }
+        requestAnimationFrame(passo);
+        tocar();
+      }
+
+      function tocar() {
+        var promessa = musica.play();
+        if (promessa && promessa.catch) {
+          promessa.catch(function () { atualizarBotaoSom(); });
+        }
+      }
+
+      function atualizarBotaoSom() {
+        var pausado = musica.paused;
+        som.classList.toggle('pausado', pausado);
+        som.setAttribute('aria-label', pausado ? 'Tocar música' : 'Pausar música');
+      }
+      musica.addEventListener('play', atualizarBotaoSom);
+      musica.addEventListener('pause', atualizarBotaoSom);
+
+      som.addEventListener('click', function () {
+        if (musica.paused) tocar(); else musica.pause();
+      });
 
       function atualizarBotao() {
         entrar.disabled = !data.value;
@@ -255,6 +346,8 @@
         }
         entrou = true;
         data.blur();
+        tocarMusicaComFade(); // precisa ser dentro do clique para o celular deixar tocar
+        som.classList.add('visivel');
 
         inicio.classList.add('saindo');
         final.setAttribute('aria-hidden', 'false');
